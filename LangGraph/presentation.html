@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LangGraph Metadata Discovery Agent - Interview Presentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 40px;
+            background: white;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Slide 1: Title Slide */
+        .title-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .title-slide h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .title-slide h2 {
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+
+        .title-slide .author {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+
+        /* Slide 2: Problem Statement */
+        .problem-slide {
+            background: white;
+        }
+
+        .split-container {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .before-after {
+            flex: 1;
+        }
+
+        .before, .after {
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .before {
+            background: #fee2e2;
+            border-left: 5px solid #dc2626;
+        }
+
+        .after {
+            background: #dcfce7;
+            border-left: 5px solid #16a34a;
+        }
+
+        .before h3, .after h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+
+        .metric-item {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            font-size: 16px;
+        }
+
+        .metric-label {
+            font-weight: 600;
+            margin-right: 10px;
+            min-width: 200px;
+        }
+
+        .metric-value {
+            color: #4b5563;
+        }
+
+        .highlight-metric {
+            background: #fef3c7;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .highlight-metric .big-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: #d97706;
+        }
+
+        /* Architecture Slide */
+        .architecture-slide {
+            padding: 20px;
+        }
+
+        .architecture-slide h2 {
+            font-size: 32px;
+            color: #1f2937;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .diagram-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            height: 70vh;
+            overflow: auto;
+            background: #fafbfc;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        /* Technical Deep Dive */
+        .technical-slide {
+            padding: 40px;
+        }
+
+        .technical-slide h2 {
+            font-size: 36px;
+            color: #1f2937;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .challenges-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+        }
+
+        .challenge-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-top: 4px solid #667eea;
+        }
+
+        .challenge-card h3 {
+            color: #667eea;
+            font-size: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .challenge-card .icon {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+
+        .challenge {
+            background: #fee2e2;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .solution {
+            background: #dcfce7;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        /* Implementation Timeline */
+        .timeline-slide {
+            background: white;
+        }
+
+        .timeline-slide h2 {
+            font-size: 36px;
+            color: #1f2937;
+            margin-bottom: 40px;
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            background: #667eea;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin: 0 40px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 0 0 3px #667eea;
+        }
+
+        .week-label {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        /* Results Slide */
+        .results-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .results-slide h2 {
+            font-size: 42px;
+            margin-bottom: 50px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            max-width: 800px;
+        }
+
+        .result-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .result-number {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .result-label {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        /* Code Slide Styles */
+        .code-slide {
+            background: white;
+            padding: 30px;
+        }
+
+        .code-slide h2 {
+            font-size: 32px;
+            color: #1f2937;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .code-container {
+            display: flex;
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            align-items: flex-start;
+        }
+
+        .code-explanation {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .code-explanation h3 {
+            color: #667eea;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .code-explanation ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .code-explanation li {
+            margin-bottom: 12px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .code-explanation li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+
+        .code-block {
+            flex: 2;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            font-family: inherit;
+            font-size: inherit;
+            line-height: inherit;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        /* Syntax highlighting */
+        .keyword { color: #c586c0; }
+        .string { color: #ce9178; }
+        .function { color: #dcdcaa; }
+        .class-name { color: #4ec9b0; }
+        .comment { color: #6a9955; }
+        .decorator { color: #4ec9b0; }
+        .number { color: #b5cea8; }
+
+        /* ASCII Diagram Slide */
+        .ascii-slide {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 40px;
+        }
+
+        .ascii-container {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            white-space: pre;
+            text-align: center;
+            background: #2d2d2d;
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid #667eea;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow-x: auto;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .ascii-title {
+            color: #4ec9b0;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        /* Tech Stack Slide */
+        .tech-slide {
+            background: white;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 900px;
+        }
+
+        .tech-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .tech-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .tech-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .tech-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .tech-purpose {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        .nav-controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-indicator {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Lessons Learned Slide */
+        .lessons-slide {
+            background: white;
+        }
+
+        .lessons-container {
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .lessons-slide h2 {
+            font-size: 36px;
+            color: #1f2937;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .lessons-section {
+            margin-bottom: 40px;
+        }
+
+        .lessons-section h3 {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .lesson-item {
+            background: #f3f4f6;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .quote-box {
+            background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
+            border-left: 4px solid #667eea;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+            font-style: italic;
+            font-size: 18px;
+            color: #4b5563;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide title-slide active">
+            <h1>🔍 LangGraph Metadata Discovery Agent</h1>
+            <h2>Revolutionizing Data Discovery at Pepper Money</h2>
+            <p class="author">AI-Powered Conversational Search for Enterprise Data</p>
+        </div>
+
+        <!-- Slide 2: The Problem & Impact -->
+        <div class="slide problem-slide">
+            <h2 style="font-size: 36px; color: #1f2937; margin-bottom: 40px;">The Challenge & Our Solution</h2>
+            <div class="split-container">
+                <div class="before-after">
+                    <div class="before">
+                        <h3>❌ Before Implementation</h3>
+                        <div class="metric-item">
+                            <span class="metric-label">Discovery Time:</span>
+                            <span class="metric-value">2-3 hours per query</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Process:</span>
+                            <span class="metric-value">Manual, 3-4 systems</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Dependency:</span>
+                            <span class="metric-value">60% needed DE support</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Data Quality:</span>
+                            <span class="metric-value">Frequent incorrect tables</span>
+                        </div>
+                    </div>
+
+                    <div class="after">
+                        <h3>✅ After Implementation</h3>
+                        <div class="metric-item">
+                            <span class="metric-label">Discovery Time:</span>
+                            <span class="metric-value">5-10 minutes</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Process:</span>
+                            <span class="metric-value">Unified AI interface</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Self-Service:</span>
+                            <span class="metric-value">85% independence</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Validation:</span>
+                            <span class="metric-value">Automatic lineage tracking</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="highlight-metric">
+                <div class="big-number">95%</div>
+                <div>Reduction in Data Discovery Time</div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Architecture Diagram -->
+        <div class="slide architecture-slide">
+            <h2>System Architecture</h2>
+            <div class="diagram-wrapper">
+                <svg width="900" height="750" viewBox="0 0 900 750" xmlns="http://www.w3.org/2000/svg">
+                    <!-- SVG content from architecture.html -->
+                    <defs>
+                        <linearGradient id="purpleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="pinkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#f093fb;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#f5576c;stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="orangeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#fa709a;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#fee140;stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="darkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#30cfd0;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#330867;stop-opacity:1" />
+                        </linearGradient>
+                        <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                            <feOffset dx="0" dy="2" result="offsetblur"/>
+                            <feFlood flood-color="#000000" flood-opacity="0.1"/>
+                            <feComposite in2="offsetblur" operator="in"/>
+                            <feMerge>
+                                <feMergeNode/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#667eea" />
+                        </marker>
+                    </defs>
+
+                    <!-- User Query -->
+                    <g transform="translate(50, 80)">
+                        <rect x="0" y="0" width="140" height="40" rx="20" fill="url(#pinkGradient)" filter="url(#shadow)"/>
+                        <text x="70" y="26" text-anchor="middle" fill="white" font-size="14" font-weight="600">📝 User Query</text>
+                    </g>
+
+                    <!-- Sample Query Bubble -->
+                    <g transform="translate(80, 20)">
+                        <path d="M 60 50 L 45 60 L 75 60 Z" fill="#fff3cd" stroke="#ffc107" stroke-width="1"/>
+                        <rect x="0" y="0" width="240" height="50" rx="8" fill="#fff3cd" stroke="#ffc107" stroke-width="1.5" filter="url(#shadow)"/>
+                        <text x="10" y="20" fill="#856404" font-size="18">💭</text>
+                        <text x="35" y="20" fill="#856404" font-size="12" font-style="italic">"What data do we have on</text>
+                        <text x="35" y="35" fill="#856404" font-size="12" font-style="italic">customer defaults?"</text>
+                    </g>
+
+                    <path d="M 190 100 Q 270 100 350 100" stroke="#667eea" stroke-width="2" fill="none" marker-end="url(#arrowhead)" stroke-dasharray="5,3" opacity="0.8"/>
+
+                    <!-- Query Router -->
+                    <g transform="translate(360, 75)">
+                        <rect x="0" y="0" width="180" height="60" rx="10" fill="url(#purpleGradient)" filter="url(#shadow)"/>
+                        <text x="90" y="30" text-anchor="middle" fill="white" font-size="16" font-weight="600">🚦 Query Router</text>
+                        <text x="90" y="48" text-anchor="middle" fill="white" font-size="12">Intelligent query parsing</text>
+                    </g>
+
+                    <line x1="450" y1="135" x2="450" y2="160" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- State Graph Engine -->
+                    <g transform="translate(330, 160)">
+                        <rect x="0" y="0" width="240" height="140" rx="10" fill="#f7fafc" stroke="#667eea" stroke-width="3" filter="url(#shadow)"/>
+                        <text x="120" y="30" text-anchor="middle" fill="#2d3748" font-size="16" font-weight="600">⚙️ State Graph Engine</text>
+                        <rect x="15" y="45" width="210" height="80" rx="6" fill="white"/>
+                        <text x="25" y="65" fill="#4a5568" font-size="12">• Current Context</text>
+                        <text x="25" y="82" fill="#4a5568" font-size="12">• User Intent Analysis</text>
+                        <text x="25" y="99" fill="#4a5568" font-size="12">• Search History Tracking</text>
+                        <text x="25" y="116" fill="#4a5568" font-size="12">• Access Level Verification</text>
+                    </g>
+
+                    <line x1="390" y1="300" x2="220" y2="360" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <line x1="450" y1="300" x2="450" y2="360" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <line x1="510" y1="300" x2="680" y2="360" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Search Nodes -->
+                    <g transform="translate(120, 370)">
+                        <rect x="0" y="0" width="160" height="70" rx="10" fill="url(#blueGradient)" filter="url(#shadow)"/>
+                        <text x="80" y="32" text-anchor="middle" fill="white" font-size="16" font-weight="600">❄️ Snowflake</text>
+                        <text x="80" y="50" text-anchor="middle" fill="white" font-size="12">Schema Search</text>
+                    </g>
+
+                    <g transform="translate(370, 370)">
+                        <rect x="0" y="0" width="160" height="70" rx="10" fill="url(#blueGradient)" filter="url(#shadow)"/>
+                        <text x="80" y="32" text-anchor="middle" fill="white" font-size="16" font-weight="600">📚 Metadata</text>
+                        <text x="80" y="50" text-anchor="middle" fill="white" font-size="12">Catalog API</text>
+                    </g>
+
+                    <g transform="translate(620, 370)">
+                        <rect x="0" y="0" width="160" height="70" rx="10" fill="url(#blueGradient)" filter="url(#shadow)"/>
+                        <text x="80" y="32" text-anchor="middle" fill="white" font-size="16" font-weight="600">📖 Business</text>
+                        <text x="80" y="50" text-anchor="middle" fill="white" font-size="12">Glossary Search</text>
+                    </g>
+
+                    <line x1="220" y1="440" x2="390" y2="490" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <line x1="450" y1="440" x2="450" y2="490" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <line x1="680" y1="440" x2="510" y2="490" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Result Compiler -->
+                    <g transform="translate(350, 500)">
+                        <rect x="0" y="0" width="200" height="80" rx="10" fill="url(#orangeGradient)" filter="url(#shadow)"/>
+                        <text x="100" y="28" text-anchor="middle" fill="#2d3748" font-size="16" font-weight="600">🔧 Result Compiler</text>
+                        <text x="100" y="46" text-anchor="middle" fill="#2d3748" font-size="11">• Relevance Scoring</text>
+                        <text x="100" y="60" text-anchor="middle" fill="#2d3748" font-size="11">• Permission Checks</text>
+                        <text x="100" y="74" text-anchor="middle" fill="#2d3748" font-size="11">• Lineage Tracking</text>
+                    </g>
+
+                    <line x1="450" y1="580" x2="450" y2="610" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Response Generator -->
+                    <g transform="translate(330, 620)">
+                        <rect x="0" y="0" width="240" height="100" rx="10" fill="url(#darkGradient)" filter="url(#shadow)"/>
+                        <text x="120" y="30" text-anchor="middle" fill="white" font-size="16" font-weight="600">💬 Response Generator</text>
+                        <rect x="20" y="40" width="200" height="50" rx="6" fill="rgba(255,255,255,0.2)"/>
+                        <text x="30" y="58" fill="white" font-size="11" font-family="monospace">Found 3 tables:</text>
+                        <text x="30" y="72" fill="white" font-size="11" font-family="monospace">• loan_defaults</text>
+                        <text x="30" y="84" fill="white" font-size="11" font-family="monospace">• risk_scores • payment_hist</text>
+                    </g>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Slide 4: State Management Code -->
+        <div class="slide code-slide">
+            <h2>State Management Implementation</h2>
+            <div class="code-container">
+                <div class="code-explanation">
+                    <h3>Key Design Decisions</h3>
+                    <ul>
+                        <li>TypedDict for type-safe state management</li>
+                        <li>Annotated types with add_messages for automatic message aggregation</li>
+                        <li>Comprehensive state tracking across workflow</li>
+                        <li>User context for permission-based filtering</li>
+                        <li>Separate fields for intent, results, and final response</li>
+                    </ul>
+                </div>
+                <div class="code-block"><pre><span class="keyword">from</span> langgraph.graph <span class="keyword">import</span> StateGraph, END
+<span class="keyword">from</span> langgraph.graph.message <span class="keyword">import</span> add_messages
+<span class="keyword">from</span> typing <span class="keyword">import</span> TypedDict, Annotated, List
+
+<span class="keyword">class</span> <span class="class-name">AgentState</span>(TypedDict):
+    <span class="string">"""State container for metadata discovery agent"""</span>
+    <span class="comment"># Conversation history with automatic message aggregation</span>
+    messages: Annotated[List, add_messages]
+
+    <span class="comment"># LLM-classified intent for routing decisions</span>
+    query_intent: str
+
+    <span class="comment"># Discovered datasets with scores and lineage</span>
+    data_sources: List[dict]
+
+    <span class="comment"># Raw results from each search source</span>
+    metadata_results: dict
+
+    <span class="comment"># User permissions and department context</span>
+    user_context: dict
+
+    <span class="comment"># Natural language response to user</span>
+    final_response: str</pre></div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Graph Construction Code -->
+        <div class="slide code-slide">
+            <h2>LangGraph Workflow Construction</h2>
+            <div class="code-container">
+                <div class="code-explanation">
+                    <h3>Graph Building Pattern</h3>
+                    <ul>
+                        <li>StateGraph defines the workflow structure</li>
+                        <li>Nodes represent discrete processing steps</li>
+                        <li>Conditional edges enable dynamic routing</li>
+                        <li>Convergence pattern aggregates parallel searches</li>
+                        <li>Compiled graph for production deployment</li>
+                    </ul>
+                </div>
+                <div class="code-block"><pre><span class="keyword">def</span> <span class="function">_build_graph</span>(self):
+    workflow = StateGraph(AgentState)
+
+    <span class="comment"># Define processing nodes</span>
+    workflow.add_node(<span class="string">"classify_intent"</span>, self.classify_intent)
+    workflow.add_node(<span class="string">"search_snowflake"</span>, self.search_snowflake_metadata)
+    workflow.add_node(<span class="string">"search_catalog"</span>, self.search_data_catalog)
+    workflow.add_node(<span class="string">"search_glossary"</span>, self.search_business_glossary)
+    workflow.add_node(<span class="string">"compile_results"</span>, self.compile_results)
+    workflow.add_node(<span class="string">"generate_response"</span>, self.generate_response)
+
+    <span class="comment"># Set entry point</span>
+    workflow.set_entry_point(<span class="string">"classify_intent"</span>)
+
+    <span class="comment"># Conditional routing based on intent</span>
+    workflow.add_conditional_edges(
+        <span class="string">"classify_intent"</span>,
+        self.route_search,
+        {
+            <span class="string">"technical"</span>: <span class="string">"search_snowflake"</span>,
+            <span class="string">"business"</span>: <span class="string">"search_glossary"</span>,
+            <span class="string">"general"</span>: <span class="string">"search_catalog"</span>
+        }
+    )
+
+    <span class="comment"># Convergence: all searches → compilation → response</span>
+    workflow.add_edge(<span class="string">"search_snowflake"</span>, <span class="string">"compile_results"</span>)
+    workflow.add_edge(<span class="string">"search_catalog"</span>, <span class="string">"compile_results"</span>)
+    workflow.add_edge(<span class="string">"search_glossary"</span>, <span class="string">"compile_results"</span>)
+    workflow.add_edge(<span class="string">"compile_results"</span>, <span class="string">"generate_response"</span>)
+    workflow.add_edge(<span class="string">"generate_response"</span>, END)
+
+    <span class="keyword">return</span> workflow.compile()</pre></div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Intent Classification -->
+        <div class="slide code-slide">
+            <h2>Intelligent Intent Classification</h2>
+            <div class="code-container">
+                <div class="code-explanation">
+                    <h3>LLM-Based Routing</h3>
+                    <ul>
+                        <li>Claude 3 Sonnet via AWS Bedrock</li>
+                        <li>Zero-shot classification into 3 categories</li>
+                        <li>Determines optimal search strategy</li>
+                        <li>Enables parallel search optimization</li>
+                        <li>Reduces unnecessary API calls</li>
+                    </ul>
+                </div>
+                <div class="code-block"><pre><span class="keyword">def</span> <span class="function">classify_intent</span>(self, state: AgentState) -> AgentState:
+    <span class="string">"""Classify user query intent using LLM"""</span>
+    user_query = state[<span class="string">"messages"</span>][-<span class="number">1</span>].content
+
+    classification_prompt = <span class="string">f"""
+    Classify this data discovery query:
+    Query: {user_query}
+
+    Categories:
+    - technical: Looking for specific tables/columns
+    - business: Looking for business metrics/KPIs
+    - general: Exploring available data
+
+    Return only the category.
+    """</span>
+
+    <span class="comment"># Use Claude 3 Sonnet for intelligent classification</span>
+    intent = self.llm.invoke(classification_prompt).content.strip()
+    state[<span class="string">"query_intent"</span>] = intent
+
+    <span class="keyword">return</span> state
+
+<span class="keyword">def</span> <span class="function">route_search</span>(self, state: AgentState) -> str:
+    <span class="string">"""Route to appropriate search based on intent"""</span>
+    <span class="keyword">return</span> state[<span class="string">"query_intent"</span>]</pre></div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Snowflake Integration -->
+        <div class="slide code-slide">
+            <h2>Snowflake Metadata Search</h2>
+            <div class="code-container">
+                <div class="code-explanation">
+                    <h3>Technical Implementation</h3>
+                    <ul>
+                        <li>Direct INFORMATION_SCHEMA queries</li>
+                        <li>Column name and comment search</li>
+                        <li>Parameterized queries for security</li>
+                        <li>Limited results for performance</li>
+                        <li>Schema, table, and column metadata</li>
+                    </ul>
+                </div>
+                <div class="code-block"><pre><span class="keyword">def</span> <span class="function">search_snowflake_metadata</span>(self, state: AgentState) -> AgentState:
+    <span class="string">"""Query Snowflake information schema for technical metadata"""</span>
+    query = <span class="string">"""
+    SELECT
+        table_catalog,
+        table_schema,
+        table_name,
+        column_name,
+        data_type,
+        comment
+    FROM information_schema.columns
+    WHERE LOWER(column_name) LIKE %s
+       OR LOWER(comment) LIKE %s
+    LIMIT 20
+    """</span>
+
+    <span class="comment"># Extract search terms from user query</span>
+    search_term = self._extract_search_terms(
+        state[<span class="string">"messages"</span>][-<span class="number">1</span>].content
+    )
+
+    <span class="comment"># Execute Snowflake query with connection pooling</span>
+    results = self._execute_snowflake_query(query, search_term)
+
+    <span class="comment"># Store results in state for compilation</span>
+    state[<span class="string">"metadata_results"</span>][<span class="string">"snowflake"</span>] = results
+
+    <span class="keyword">return</span> state</pre></div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Result Compilation & Ranking -->
+        <div class="slide code-slide">
+            <h2>Intelligent Result Compilation</h2>
+            <div class="code-container">
+                <div class="code-explanation">
+                    <h3>Compilation Strategy</h3>
+                    <ul>
+                        <li>Multi-source result aggregation</li>
+                        <li>Relevance scoring algorithm</li>
+                        <li>Permission-based filtering</li>
+                        <li>Data lineage enrichment</li>
+                        <li>Top-K selection for response</li>
+                    </ul>
+                </div>
+                <div class="code-block"><pre><span class="keyword">def</span> <span class="function">compile_results</span>(self, state: AgentState) -> AgentState:
+    <span class="string">"""Compile and rank results from multiple sources"""</span>
+    all_results = state[<span class="string">"metadata_results"</span>]
+
+    <span class="comment"># Apply relevance scoring</span>
+    scored_results = []
+    <span class="keyword">for</span> source, results <span class="keyword">in</span> all_results.items():
+        <span class="keyword">for</span> result <span class="keyword">in</span> results:
+            score = self._calculate_relevance_score(
+                result,
+                state[<span class="string">"messages"</span>][-<span class="number">1</span>].content,
+                state[<span class="string">"user_context"</span>]
+            )
+            scored_results.append({
+                <span class="string">"source"</span>: source,
+                <span class="string">"data"</span>: result,
+                <span class="string">"score"</span>: score,
+                <span class="string">"lineage"</span>: self._get_lineage(result)
+            })
+
+    <span class="comment"># Filter by user permissions</span>
+    filtered_results = self._apply_permission_filters(
+        scored_results,
+        state[<span class="string">"user_context"</span>][<span class="string">"access_level"</span>]
+    )
+
+    <span class="comment"># Sort by relevance and select top 10</span>
+    state[<span class="string">"data_sources"</span>] = sorted(
+        filtered_results,
+        key=<span class="keyword">lambda</span> x: x[<span class="string">"score"</span>],
+        reverse=<span class="keyword">True</span>
+    )[:<span class="number">10</span>]
+
+    <span class="keyword">return</span> state</pre></div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Technical Deep Dive -->
+        <div class="slide technical-slide">
+            <h2>Technical Challenges & Solutions</h2>
+            <div class="challenges-grid">
+                <div class="challenge-card">
+                    <h3><span class="icon">🔄</span>State Management</h3>
+                    <div class="challenge">Challenge: Complex conversation context across multiple sources</div>
+                    <div class="solution">Solution: Hierarchical state design with checkpoint management</div>
+                </div>
+
+                <div class="challenge-card">
+                    <h3><span class="icon">🛡️</span>Resilience</h3>
+                    <div class="challenge">Challenge: Multiple external system dependencies</div>
+                    <div class="solution">Solution: Fallback mechanisms & cached metadata layers</div>
+                </div>
+
+                <div class="challenge-card">
+                    <h3><span class="icon">📈</span>Scaling</h3>
+                    <div class="challenge">Challenge: Concurrent users & large result sets</div>
+                    <div class="solution">Solution: Redis caching, async searches, streaming responses</div>
+                </div>
+
+                <div class="challenge-card">
+                    <h3><span class="icon">🔐</span>Governance</h3>
+                    <div class="challenge">Challenge: Financial services compliance requirements</div>
+                    <div class="solution">Solution: Permission filtering, comprehensive audit trails</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Implementation Timeline -->
+        <div class="slide timeline-slide">
+            <h2>Implementation Journey</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="week-label">WEEKS 1-2</div>
+                        <strong>MVP Launch</strong>
+                        <p>Snowflake metadata search only - proved immediate value</p>
+                    </div>
+                    <div class="timeline-marker"></div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="week-label">WEEKS 3-4</div>
+                        <strong>Business Integration</strong>
+                        <p>Added business glossary - improved business user adoption</p>
+                    </div>
+                    <div class="timeline-marker"></div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="week-label">WEEKS 5-6</div>
+                        <strong>Full Coverage</strong>
+                        <p>Integrated data catalog API - achieved complete data coverage</p>
+                    </div>
+                    <div class="timeline-marker"></div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="week-label">WEEKS 7-8</div>
+                        <strong>Enhanced Reliability</strong>
+                        <p>Added proactive alerting and quality checks</p>
+                    </div>
+                    <div class="timeline-marker"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Real-World Impact -->
+        <div class="slide">
+            <h2 style="font-size: 36px; color: #1f2937; margin-bottom: 40px; text-align: center;">Real-World Impact Story</h2>
+            <div class="quote-box">
+                "A risk analyst searching for customer default data previously spent 2+ hours finding the right tables, understanding relationships, and verifying data freshness. With the LangGraph agent, they asked 'What data do we have on customer defaults?' and received curated, validated results with complete lineage in under 30 seconds."
+            </div>
+            <div style="display: flex; gap: 40px; justify-content: center; margin-top: 40px;">
+                <div style="text-align: center;">
+                    <div style="font-size: 64px; font-weight: 700; color: #667eea;">2-3h</div>
+                    <div style="font-size: 18px; color: #6b7280;">Before</div>
+                </div>
+                <div style="font-size: 48px; color: #d1d5db; align-self: center;">→</div>
+                <div style="text-align: center;">
+                    <div style="font-size: 64px; font-weight: 700; color: #16a34a;">30s</div>
+                    <div style="font-size: 18px; color: #6b7280;">After</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Tech Stack -->
+        <div class="slide tech-slide">
+            <h2 style="font-size: 36px; color: #1f2937; margin-bottom: 40px; text-align: center;">Technology Stack</h2>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="tech-icon">🎯</div>
+                    <div class="tech-name">LangGraph</div>
+                    <div class="tech-purpose">Orchestration</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🤖</div>
+                    <div class="tech-name">Claude (Bedrock)</div>
+                    <div class="tech-purpose">LLM Intelligence</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">❄️</div>
+                    <div class="tech-name">Snowflake</div>
+                    <div class="tech-purpose">Data Platform</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">⚡</div>
+                    <div class="tech-name">Redis</div>
+                    <div class="tech-purpose">Caching Layer</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🚀</div>
+                    <div class="tech-name">FastAPI</div>
+                    <div class="tech-purpose">API Framework</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">📊</div>
+                    <div class="tech-name">CloudWatch</div>
+                    <div class="tech-purpose">Monitoring</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Lessons Learned -->
+        <div class="slide lessons-slide">
+            <div class="lessons-container">
+                <h2>Lessons Learned</h2>
+                <div class="lessons-section">
+                    <h3>✅ What Worked Well</h3>
+                    <div class="lesson-item">Incremental rollout built trust and allowed rapid iteration</div>
+                    <div class="lesson-item">Close collaboration with end users ensured we solved real problems</div>
+                    <div class="lesson-item">LangGraph's state management simplified complex conversation flows</div>
+                </div>
+
+                <div class="lessons-section">
+                    <h3>🚀 Future Enhancements</h3>
+                    <div class="lesson-item">Implement RAG for improved semantic understanding</div>
+                    <div class="lesson-item">Add vector embeddings for similarity-based recommendations</div>
+                    <div class="lesson-item">Develop few-shot learning for domain-specific classification</div>
+                    <div class="lesson-item">Expand to include data quality metrics in responses</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Final Results -->
+        <div class="slide results-slide">
+            <h2>Key Achievements</h2>
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-number">95%</div>
+                    <div class="result-label">Time Reduction</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-number">85%</div>
+                    <div class="result-label">Self-Service Rate</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-number">60%→15%</div>
+                    <div class="result-label">DE Dependency</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-number">100%</div>
+                    <div class="result-label">Audit Compliance</div>
+                </div>
+            </div>
+            <p style="margin-top: 40px; font-size: 20px; opacity: 0.95;">
+                Built production-grade AI system delivering measurable business value
+            </p>
+        </div>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="nav-controls">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+    </div>
+
+    <!-- Slide Indicator -->
+    <div class="slide-indicator" id="slideIndicator">
+        Slide <span id="currentSlide">1</span> / <span id="totalSlides">14</span>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        // Update total slides counter
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(index) {
+            // Hide all slides
+            slides.forEach(slide => slide.classList.remove('active'));
+
+            // Show current slide
+            slides[index].classList.add('active');
+
+            // Update slide indicator
+            document.getElementById('currentSlide').textContent = index + 1;
+
+            // Update button states
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+
+            // Ensure index stays within bounds
+            if (currentSlideIndex < 0) currentSlideIndex = 0;
+            if (currentSlideIndex >= totalSlides) currentSlideIndex = totalSlides - 1;
+
+            showSlide(currentSlideIndex);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            } else if (event.key === 'Home') {
+                currentSlideIndex = 0;
+                showSlide(0);
+            } else if (event.key === 'End') {
+                currentSlideIndex = totalSlides - 1;
+                showSlide(totalSlides - 1);
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+
+        // Optional: Add fullscreen toggle with F key
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'f' || event.key === 'F') {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QBE Claims Allocation System - Interview Presentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: #333;
+            overflow: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide {
+            display: none;
+            width: 90%;
+            max-width: 1200px;
+            min-height: 80vh;
+            background: white;
+            border-radius: 20px;
+            padding: 60px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideIn 0.5s ease;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        h1 {
+            color: #2d3748;
+            font-size: 3em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+        }
+
+        h2 {
+            color: #4a5568;
+            font-size: 2.2em;
+            margin: 30px 0 20px 0;
+        }
+
+        h3 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin: 20px 0 15px 0;
+        }
+
+        p, li {
+            font-size: 1.3em;
+            line-height: 1.6;
+            color: #4a5568;
+            margin: 10px 0;
+        }
+
+        ul {
+            margin-left: 30px;
+        }
+
+        .code-block {
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .metric {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .metric-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .metric-label {
+            font-size: 1.1em;
+        }
+
+        .architecture-diagram {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+            font-size: 0.9em;
+            line-height: 1.3;
+        }
+
+        .comparison-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .comparison-table tr:hover {
+            background: #f7fafc;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #ffd89b 0%, #19547b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+
+        .nav-buttons {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+
+        .nav-button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .slide-number {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1.1em;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .tech-badge {
+            background: #edf2f7;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 2px solid #667eea;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .tech-badge:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .key-point {
+            background: #f0fff4;
+            border-left: 5px solid #48bb78;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .challenge-solution {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .challenge, .solution {
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        .challenge {
+            background: #fff5f5;
+            border: 2px solid #fc8181;
+        }
+
+        .solution {
+            background: #f0fff4;
+            border: 2px solid #48bb78;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.6em;
+            }
+
+            p, li {
+                font-size: 1.1em;
+            }
+
+            .challenge-solution {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>QBE Claims Allocation System</h1>
+            <h2 style="color: #667eea;">Intelligent Orchestration at Enterprise Scale</h2>
+
+            <div class="metric-grid">
+                <div class="metric">
+                    <div class="metric-number">10,000+</div>
+                    <div class="metric-label">Claims/Month</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-number">70%</div>
+                    <div class="metric-label">Time Reduction</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-number">$2.3M</div>
+                    <div class="metric-label">Annual Savings</div>
+                </div>
+            </div>
+
+            <div class="key-point">
+                <h3>Direct Relevance to Pragia</h3>
+                <p>Built an intelligent agent system that <strong>proactively predicts</strong> optimal routing
+                while <strong>reactively adjusting</strong> to real-time conditions - exactly what Pragia needs
+                for IR observability and response.</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: The Challenge -->
+        <div class="slide">
+            <h1>The Challenge at QBE</h1>
+
+            <div class="challenge-solution">
+                <div class="challenge">
+                    <h3>Problems</h3>
+                    <ul>
+                        <li>10,000+ claims monthly overwhelming staff</li>
+                        <li>150+ officers with varied expertise</li>
+                        <li>Complex matching requirements</li>
+                        <li>SLA compliance pressure</li>
+                        <li>Uneven workload distribution</li>
+                    </ul>
+                </div>
+                <div class="solution">
+                    <h3>Requirements</h3>
+                    <ul>
+                        <li>Intelligent claim analysis</li>
+                        <li>Optimal officer matching</li>
+                        <li>Real-time load balancing</li>
+                        <li>Complete audit trails</li>
+                        <li>Scalable architecture</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="key-point">
+                <h3>Similar to Pragia's Needs</h3>
+                <p>Both systems require understanding complex inputs, making intelligent routing decisions,
+                and adapting to changing conditions in real-time while maintaining compliance.</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: Architecture Overview -->
+        <div class="slide">
+            <h1>System Architecture</h1>
+
+            <div class="architecture-diagram">
+┌─────────────────────────────────────────┐
+│         Claims Input Gateway            │
+└────────────────┬────────────────────────┘
+                 ↓
+┌─────────────────────────────────────────┐
+│         NLP Analysis Pipeline           │
+│  • Entity Extraction (spaCy)            │
+│  • Complexity Scoring                   │
+│  • Category Classification (BERT)       │
+│  • Urgency Detection                    │
+└────────────────┬────────────────────────┘
+                 ↓
+┌─────────────────────────────────────────┐
+│      Orchestration Engine               │
+│  ┌─────────────┐  ┌─────────────┐      │
+│  │  Proactive  │  │  Reactive   │      │
+│  │     ML      │←→│ Adjustments │      │
+│  └─────────────┘  └─────────────┘      │
+└────────────────┬────────────────────────┘
+                 ↓
+┌─────────────────────────────────────────┐
+│    Officer Assignment & Monitoring      │
+└─────────────────────────────────────────┘
+            </div>
+
+            <h3>Key Innovation: Dual-Mode Orchestration</h3>
+            <ul>
+                <li><strong>Proactive:</strong> ML predictions for optimal matches</li>
+                <li><strong>Reactive:</strong> Real-time adjustments for conditions</li>
+                <li><strong>Continuous:</strong> 5-minute rebalancing cycles</li>
+            </ul>
+        </div>
+
+        <!-- Slide 4: NLP Pipeline -->
+        <div class="slide">
+            <h1>NLP Analysis Pipeline</h1>
+
+            <div class="code-block">
+# Multi-stage claim analysis
+def analyze_claim(claim_text):
+    # Stage 1: Entity Extraction
+    entities = extract_entities(claim_text)  # spaCy NER
+
+    # Stage 2: Complexity Features
+    features = {
+        'medical_terms': count_medical_terms(),
+        'legal_references': count_legal_refs(),
+        'damage_amount': extract_amount(),
+        'multiple_parties': len(entities['persons']) > 2
+    }
+
+    # Stage 3: Classification (BERT)
+    categories = classifier.predict(claim_text)
+
+    # Stage 4: Complexity Score (0-100)
+    complexity = calculate_complexity(features, categories)
+
+    # Stage 5: Time Estimation
+    handling_time = estimate_time(complexity, categories)
+
+    return ClaimComplexity(
+        score=complexity,
+        categories=categories,
+        urgency=determine_urgency(features),
+        est_time=handling_time
+    )
+            </div>
+
+            <div class="metric-grid">
+                <div class="metric">
+                    <div class="metric-number">94%</div>
+                    <div class="metric-label">Entity Extraction Accuracy</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-number">&lt;500ms</div>
+                    <div class="metric-label">Analysis Time</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Orchestration Logic -->
+        <div class="slide">
+            <h1>Intelligent Orchestration</h1>
+
+            <div class="code-block">
+async def orchestrate(claim):
+    # 1. Analyze complexity
+    complexity = analyzer.analyze_claim(claim)
+
+    # 2. Proactive: ML prediction
+    candidates = await predict_best_matches(claim)
+    # Uses 768-dim embeddings for similarity
+
+    # 3. Reactive: Real-time filters
+    available = await check_availability(candidates)
+
+    # 4. Smart allocation
+    officer = await smart_allocation(
+        claim, available, strategy
+    )
+
+    # 5. Continuous monitoring
+    await update_metrics(claim, officer)
+
+    return officer.id
+            </div>
+
+            <h3>Allocation Strategies</h3>
+            <ul>
+                <li><strong>ML_OPTIMAL:</strong> Use predictions for best match</li>
+                <li><strong>EXPERTISE_MATCH:</strong> Prioritize specialization</li>
+                <li><strong>LOAD_BALANCED:</strong> Even distribution</li>
+                <li><strong>URGENT_PRIORITY:</strong> Critical claims first</li>
+            </ul>
+        </div>
+
+        <!-- Slide 6: Technical Stack -->
+        <div class="slide">
+            <h1>Technology Stack</h1>
+
+            <h3>Core Technologies</h3>
+            <div class="tech-stack">
+                <span class="tech-badge">Python 3.9</span>
+                <span class="tech-badge">FastAPI</span>
+                <span class="tech-badge">spaCy</span>
+                <span class="tech-badge">Transformers (BERT)</span>
+                <span class="tech-badge">PostgreSQL</span>
+                <span class="tech-badge">Redis</span>
+                <span class="tech-badge">Docker Swarm</span>
+                <span class="tech-badge">Azure Service Bus</span>
+            </div>
+
+            <h3>CI/CD Pipeline</h3>
+            <div class="code-block">
+# GitLab CI Pipeline
+stages:
+  - test (pytest, coverage, pylint)
+  - build (Docker images)
+  - deploy-staging (smoke tests)
+  - deploy-production (blue-green)
+
+# Zero-downtime deployments
+# Automated rollback on failures
+# A/B testing for model updates
+            </div>
+
+            <div class="key-point">
+                <p><strong>Infrastructure as Code:</strong> Fully automated deployment pipeline
+                with Docker Swarm orchestration, handling 5x traffic spikes seamlessly.</p>
+            </div>
+        </div>
+
+        <!-- Slide 7: Results & Impact -->
+        <div class="slide">
+            <h1>Results & Business Impact</h1>
+
+            <div class="metric-grid">
+                <div class="metric">
+                    <div class="metric-number">70%</div>
+                    <div class="metric-label">Reduction in Manual Work</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-number">30%</div>
+                    <div class="metric-label">Better Match Accuracy</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-number">25%</div>
+                    <div class="metric-label">Faster Resolution</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-number">99.5%</div>
+                    <div class="metric-label">System Uptime</div>
+                </div>
+            </div>
+
+            <h3>Business Outcomes</h3>
+            <ul>
+                <li><strong>$2.3M annual savings</strong> from efficiency gains</li>
+                <li><strong>18% increase</strong> in customer satisfaction</li>
+                <li><strong>40% reduction</strong> in escalations</li>
+                <li><strong>Complete compliance</strong> with audit requirements</li>
+            </ul>
+
+            <div class="key-point">
+                <p>Scaled from pilot (1,000 claims) to production (10,000+ claims)
+                with room for 5x growth without architecture changes.</p>
+            </div>
+        </div>
+
+        <!-- Slide 8: Connection to Pragia -->
+        <div class="slide">
+            <h1>Direct Application to Pragia</h1>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>QBE Claims System</th>
+                        <th>→</th>
+                        <th>Pragia IR System</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Claims routing to officers</td>
+                        <td>→</td>
+                        <td>Query routing to data sources</td>
+                    </tr>
+                    <tr>
+                        <td>Officer expertise matching</td>
+                        <td>→</td>
+                        <td>Data source capability matching</td>
+                    </tr>
+                    <tr>
+                        <td>Workload balancing</td>
+                        <td>→</td>
+                        <td>API rate limit management</td>
+                    </tr>
+                    <tr>
+                        <td>NLP claim analysis</td>
+                        <td>→</td>
+                        <td>Query intent understanding</td>
+                    </tr>
+                    <tr>
+                        <td>Real-time adjustments</td>
+                        <td>→</td>
+                        <td>Market event responses</td>
+                    </tr>
+                    <tr>
+                        <td>Compliance tracking</td>
+                        <td>→</td>
+                        <td>Regulatory compliance</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="key-point">
+                <h3>Key Insight</h3>
+                <p>Both systems require <span class="highlight">intelligent agents</span> that
+                don't just analyze but take action - combining <strong>proactive predictions</strong>
+                with <strong>reactive adjustments</strong> for optimal outcomes.</p>
+            </div>
+        </div>
+
+        <!-- Slide 9: Lessons & Best Practices -->
+        <div class="slide">
+            <h1>Lessons Learned</h1>
+
+            <h3>What Worked Well</h3>
+            <ul>
+                <li><strong>Incremental rollout:</strong> Started simple, added ML gradually</li>
+                <li><strong>Human-in-the-loop:</strong> Kept manual override capabilities</li>
+                <li><strong>Observable by design:</strong> Comprehensive monitoring from day one</li>
+                <li><strong>Feedback loops:</strong> Continuous model improvement</li>
+            </ul>
+
+            <h3>Challenges Overcome</h3>
+            <div class="challenge-solution">
+                <div class="challenge">
+                    <h4>Challenge</h4>
+                    <p>Model drift over time</p>
+                    <p>Edge cases and failures</p>
+                    <p>User adoption resistance</p>
+                </div>
+                <div class="solution">
+                    <h4>Solution</h4>
+                    <p>Automated retraining pipeline</p>
+                    <p>Robust fallback strategies</p>
+                    <p>Gradual rollout with training</p>
+                </div>
+            </div>
+
+            <div class="key-point">
+                <p><strong>Key Success Factor:</strong> Building trust through transparency -
+                users could see why decisions were made and override when needed.</p>
+            </div>
+        </div>
+
+        <!-- Slide 10: Q&A Ready -->
+        <div class="slide">
+            <h1>Ready for Deep Dives</h1>
+
+            <h3>Technical Topics I Can Detail</h3>
+            <ul>
+                <li>Embedding generation and similarity scoring algorithms</li>
+                <li>Real-time stream processing with Azure Service Bus</li>
+                <li>Blue-green deployment strategies with Docker Swarm</li>
+                <li>Model drift detection and automated retraining</li>
+                <li>Performance optimization for sub-second responses</li>
+            </ul>
+
+            <h3>Architecture Decisions</h3>
+            <ul>
+                <li>Why microservices over monolith</li>
+                <li>Event-driven vs request-response patterns</li>
+                <li>Scaling strategies and bottleneck identification</li>
+                <li>Monitoring and observability implementation</li>
+            </ul>
+
+            <h3>Business Impact</h3>
+            <ul>
+                <li>ROI calculations and metrics definition</li>
+                <li>Stakeholder management strategies</li>
+                <li>Risk mitigation approaches</li>
+                <li>Future roadmap and enhancements</li>
+            </ul>
+
+            <div class="key-point" style="margin-top: 40px;">
+                <h2 style="text-align: center;">Questions?</h2>
+                <p style="text-align: center;">Let's discuss how this experience applies to
+                building Pragia's intelligent IR agent</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+    </div>
+
+    <div class="slide-number" id="slideNumber">1 / 10</div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 10;
+
+        function showSlide(n) {
+            const slides = document.getElementsByClassName('slide');
+
+            if (n > totalSlides) currentSlide = 1;
+            if (n < 1) currentSlide = totalSlides;
+
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].classList.remove('active');
+            }
+
+            slides[currentSlide - 1].classList.add('active');
+
+            document.getElementById('slideNumber').textContent = `${currentSlide} / ${totalSlides}`;
+
+            // Update button states
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            showSlide(currentSlide);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+        });
+
+        // Initialize
+        showSlide(1);
+    </script>
+</body>
+</html>
